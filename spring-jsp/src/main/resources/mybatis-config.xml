@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+	<settings>
+		<setting name="mapUnderscoreToCamelCase" value="true" />
+   		<setting name="logImpl" value="SLF4J" />
+   		<setting name="mapUnderscoreToCamelCase" value="true"/>
+	</settings>
+
+	<typeAliases>
+		<typeAlias alias="userVO" type="com.survey.vo.UserVO" />
+		<typeAlias alias="questionVO" type="com.survey.vo.QuestionVO" />
+		<typeAlias alias="surveyVO" type="com.survey.vo.SurveyVO" />
+		<typeAlias alias="answerVO" type="com.survey.vo.AnswerVO" />
+		<typeAlias alias="optionVO" type="com.survey.vo.OptionVO" />
+		<typeAlias alias="responseVO" type="com.survey.vo.ResponseVO" />
+		<package name="com.survey.vo" />
+	</typeAliases>
+
+	<mappers>
+		<mapper resource="mapper/survey.xml" />
+	</mappers>
+
+
+
+</configuration>
