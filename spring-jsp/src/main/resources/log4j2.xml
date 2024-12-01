@@ -1,21 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN">
     <Appenders>
-        <!-- 콘솔에 로그 출력 -->
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss}] [%level] [%logger] - %msg%n" />
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%level] [%logger{36}] - %msg%n" />
         </Console>
     </Appenders>
-
     <Loggers>
-        <!-- Root Logger 설정 -->
+        <Logger name="org.springframework.web" level="DEBUG" additivity="false">
+            <AppenderRef ref="Console" />
+        </Logger>
+        <Logger name="org.springframework.web.servlet.DispatcherServlet" level="DEBUG" additivity="false">
+            <AppenderRef ref="Console" />
+        </Logger>
         <Root level="INFO">
             <AppenderRef ref="Console" />
         </Root>
-
-        <!-- 패키지별 로거 -->
-        <Logger name="com.survey" level="DEBUG" additivity="false">
-            <AppenderRef ref="Console" />
-        </Logger>
     </Loggers>
 </Configuration>

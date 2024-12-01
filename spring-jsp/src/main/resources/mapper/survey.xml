@@ -3,6 +3,10 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.survey.mapper.SurveyMapper">
+  <resultMap id="SurveyResultMap" type="com.survey.vo.SurveyVO">
+        <result column="survey_id" property="surveyId"/>
+    </resultMap>
+    
 	<select id="surveyList" resultType="surveyVO">
 		SELECT *
 FROM (
@@ -48,8 +52,191 @@ WHERE survey_num > (#{pageNum} - 1) * #{amount}
 	<select id="surveyPost" resultType="surveyVO">
 		select *
 		  from sv_survey
-		 where survey_id = #{survey_id}
+		 where survey_id = #{surveyId}
 	
 	</select>
 	
+	<select id="getOptionList" resultType="optionVO">
+    SELECT 
+        O.OPTION_ID,
+        O.OPTION_TEXT,
+        O.TURN AS OPTION_TURN,
+        O.QUESTION_ID,
+        CASE 
+            WHEN A.OPTION_ID = O.OPTION_ID THEN 1
+            ELSE 0 
+        END AS is_selected
+    FROM 
+        SV_OPTION O
+    LEFT JOIN 
+        SV_ANSWER A
+        ON 
+        O.QUESTION_ID = A.QUESTION_ID
+        AND A.USER_ID = #{userId}
+    WHERE 
+        O.QUESTION_ID IN (
+            SELECT QUESTION_ID 
+            FROM SV_QUESTION 
+            WHERE SURVEY_ID = #{surveyId}
+        )
+    ORDER BY 
+        O.QUESTION_ID, O.TURN ASC
+</select>
+
+<select id="getAnswerTextList" resultType="answerVO">
+    SELECT 
+        A.QUESTION_ID,
+        A.ANSWER_TEXT
+    FROM 
+        SV_ANSWER A
+    WHERE 
+        A.USER_ID = #{userId}
+        AND A.QUESTION_ID IN (
+            SELECT QUESTION_ID 
+            FROM SV_QUESTION 
+            WHERE SURVEY_ID = #{surveyId}
+        )
+</select>
+	
+	
+	<select id="getQuestionList" resultType="questionVO">
+    SELECT *
+    FROM (
+        SELECT 
+            question_level, 
+            QUESTION_ID,
+            QUESTION_TEXT,
+            CATEGORY_ID,
+            SURVEY_ID,
+            QUESTION_TYPE,
+            PARENT_QUESTION_ID,
+            REQUIRED,
+            CATEGORY_NAME,
+            TURN,
+            QUESTION_INDEX,
+            ROWNUM AS question_num 
+        FROM (
+            SELECT 
+                LEVEL AS question_level, 
+                A.QUESTION_ID,
+                A.QUESTION_TEXT,
+                A.Q_CATEGORY_ID AS CATEGORY_ID, 
+                A.SURVEY_ID,
+                A.QUESTION_TYPE,
+                A.PARENT_QUESTION_ID,
+                A.REQUIRED,
+                B.Q_CATEGORY_NAME AS CATEGORY_NAME,
+                A.TURN,
+                A.QUESTION_INDEX             
+            FROM 
+                SV_QUESTION A
+            LEFT JOIN 
+                SV_QUESTION_CATEGORY B
+            ON 
+                A.Q_CATEGORY_ID = B.Q_CATEGORY_ID
+            WHERE 
+                A.SURVEY_ID = #{surveyId}
+            START WITH 
+                A.PARENT_QUESTION_ID IS NULL
+            CONNECT BY PRIOR 
+                A.QUESTION_ID = A.PARENT_QUESTION_ID 
+            ORDER BY 
+                A.TURN ASC
+        )
+        WHERE 
+            ROWNUM <![CDATA[ <= ]]> #{pageNum} * #{amount}
+    )
+    WHERE 
+        question_num > (#{pageNum} - 1) * #{amount}
+</select>
+
+<select id="getQuestionTotalCount" resultType="int">
+    SELECT COUNT(*)
+   FROM (
+       SELECT 
+           LEVEL AS question_level,
+           A.QUESTION_ID,
+           (SELECT COUNT(*) 
+            FROM SV_QUESTION B 
+            WHERE B.PARENT_QUESTION_ID = A.QUESTION_ID) AS child_count
+       FROM 
+           SV_QUESTION A
+       WHERE 
+           A.SURVEY_ID = #{surveyId}
+       START WITH 
+           A.PARENT_QUESTION_ID IS NULL
+       CONNECT BY PRIOR 
+           A.QUESTION_ID = A.PARENT_QUESTION_ID
+   )
+   WHERE question_level > 1
+      OR child_count = 0
+</select>
+
+<select id="totalParentCount" resultType="int">
+	SELECT COUNT(*) AS totalParentCount
+FROM (
+    SELECT question_level,
+           QUESTION_ID,
+           QUESTION_TEXT,
+           CATEGORY_ID,
+           SURVEY_ID,
+           QUESTION_TYPE,
+           PARENT_QUESTION_ID,
+           REQUIRED,
+           CATEGORY_NAME,
+           TURN,
+           ROWNUM AS question_num
+    FROM (
+        SELECT LEVEL AS question_level,
+               A.QUESTION_ID,
+               A.QUESTION_TEXT,
+               A.Q_CATEGORY_ID AS CATEGORY_ID,
+               A.SURVEY_ID,
+               A.QUESTION_TYPE,
+               A.PARENT_QUESTION_ID,
+               A.REQUIRED,
+               B.Q_CATEGORY_NAME AS CATEGORY_NAME,
+               A.TURN
+        FROM SV_QUESTION A
+        LEFT JOIN SV_QUESTION_CATEGORY B
+               ON A.Q_CATEGORY_ID = B.Q_CATEGORY_ID
+        WHERE A.SURVEY_ID = #{surveyId}
+        START WITH 
+              A.PARENT_QUESTION_ID IS NULL
+        CONNECT BY PRIOR 
+                   A.QUESTION_ID = A.PARENT_QUESTION_ID
+        ORDER BY A.TURN ASC
+    )
+    WHERE ROWNUM<![CDATA[ < ]]>#{pageNum} * #{amount} 
+)
+WHERE question_level = 1
+</select>
+
+<select id="parentNumber" resultType="questionVO">
+SELECT 
+    CASE 
+        WHEN PARENT_QUESTION_ID IS NULL THEN ROWNUM 
+        ELSE NULL 
+    END AS parent_number,
+    question_level,
+    QUESTION_ID,
+    PARENT_QUESTION_ID,
+    QUESTION_TEXT,
+    TURN
+FROM (
+    SELECT 
+        LEVEL AS question_level,
+        QUESTION_ID,
+        PARENT_QUESTION_ID,
+        QUESTION_TEXT,
+        TURN
+    FROM SV_QUESTION
+    WHERE SURVEY_ID = #{surveyId}
+    START WITH PARENT_QUESTION_ID IS NULL
+    CONNECT BY PRIOR QUESTION_ID = PARENT_QUESTION_ID
+    ORDER BY TURN ASC
+)
+WHERE PARENT_QUESTION_ID IS NULL
+</select>
+
 </mapper>

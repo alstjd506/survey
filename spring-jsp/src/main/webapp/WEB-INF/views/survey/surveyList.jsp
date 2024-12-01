@@ -10,7 +10,6 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
-<link href="/css/egovframework/board/boardList.css" rel="stylesheet">
 <link
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"
 	rel="stylesheet"
@@ -21,16 +20,6 @@
 <style>
 </style>
 <body>
-	<nav id="top-menu">
-		<ul class="menu-bar">
-			<li class="menu-item">
-				<a href="/board/boardList.do?categoryId=1" class="menu-link">일반 게시판</a></li>
-			<li class="menu-item">
-				<a href="/board/galleryList.do?categoryId=2" class="menu-link">갤러리</a></li>
-			<li class="menu-item">
-				<a href="/survey/surveyList.do" class="menu-link">설문조사</a></li>
-		</ul>
-	</nav>
 	<main class="mt-5 pt-5">
 		<div class="container-fluid px-4">
 			<div class="nav">
@@ -55,6 +44,7 @@
 						<table class="table table-hover table-striped">
 							<thead>
 								<tr>
+									<th>surveyId</th>
 									<th>순번</th>
 									<th>제목</th>
 									<th>작성자</th>
@@ -65,12 +55,13 @@
 							<tbody>
 								<c:forEach items="${surveyList}" var="survey" varStatus="status">
 									<tr>
+										<td>${survey.surveyId}</td>
             							<td>
             								${startNumber - status.index}
             								<input type="hidden" value="${survey.surveyId}">
             							</td>
         								<td class="title-column">
-											<a href="/survey/surveyPost.do?survey_id=${survey.surveyId}">
+											<a href="/survey/surveyPost.do?surveyId=${survey.surveyId}">
 												${survey.title}
 											</a></td>
 										<td>${survey.name}</td>
@@ -110,7 +101,7 @@
             					</a>
         					</li>
         					<li>
-            					<a class="page-link" href="/board/boardList.do?pageNum=${pageDTO.realEnd}&amount=${criteria.amount}&searchType=${criteria.searchType}&keyword=${criteria.keyword}" aria-label="Next">
+            					<a class="page-link" href="/survey/surveyList.do?pageNum=${pageDTO.realEnd}&amount=${criteria.amount}&searchType=${criteria.searchType}&keyword=${criteria.keyword}" aria-label="Next">
                 					<span aria-hidden="true">&raquo;</span>
             					</a>
         					</li>
@@ -132,9 +123,6 @@
 	src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
 	integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
 	crossorigin="anonymous"></script>
-<script type="text/javascript">
-	const user_id = '${userId}';
-</script>
 <script type="text/javascript">
 	$(document).ready(function() {
 		

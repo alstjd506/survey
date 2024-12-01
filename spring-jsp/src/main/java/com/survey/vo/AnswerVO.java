@@ -9,4 +9,5 @@ public class AnswerVO {
 	private Integer questionId;
 	private Integer userId;
 	private Integer optionId;
+	private Integer surveyId;
 }

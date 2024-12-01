@@ -13,4 +13,21 @@ public class QuestionVO {
 	private Integer required;
 	private Integer qCategoryId;
 	private String qCategoryName;
+	
+	private String categoryName;
+	private Integer categoryId;
+	private Integer questionLevel;
+	private Integer questionNum;
+	
+	private Integer questionIndex;
+	private Integer index;
+	private Integer childCount;
+	
+	public boolean isParent() {
+        return parentQuestionId == null; 
+    }
+	
+	public Integer getChildCount() {
+	    return childCount != null ? childCount : 0; 
+	}
 }

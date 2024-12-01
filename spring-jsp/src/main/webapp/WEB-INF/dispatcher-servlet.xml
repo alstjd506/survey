@@ -4,11 +4,11 @@
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:mvc="http://www.springframework.org/schema/mvc"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans 
-                    file:/E:/Spring/spring-jsp/src/main/resources/schema/spring-beans.xsd
+                    file:/E:/git\survey/survey/spring-jsp/src/main/resources/schema/spring-beans.xsd
                     http://www.springframework.org/schema/context 
-                    file:/E:/Spring/spring-jsp/src/main/resources/schema/spring-context.xsd
+                    file:/E:/git/survey/survey/spring-jsp/src/main/resources/schema/spring-context.xsd
                     http://www.springframework.org/schema/mvc 
-                    file:/E:/Spring/spring-jsp/src/main/resources/schema/spring-mvc.xsd">
+                    file:/E:/git/survey/survey/spring-jsp/src/main/resources/schema/spring-mvc.xsd">
 
 	<bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">

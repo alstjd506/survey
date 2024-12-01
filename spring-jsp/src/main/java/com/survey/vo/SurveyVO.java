@@ -16,6 +16,6 @@ public class SurveyVO {
 	private Date updateDt;
 	private Integer userId;
 	private Integer questionId;
-	
+		
 	private String name;
 }
