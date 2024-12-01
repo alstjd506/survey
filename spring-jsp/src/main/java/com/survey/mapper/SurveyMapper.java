@@ -27,4 +27,10 @@ public interface SurveyMapper {
 	public int totalParentCount(Criteria criteria);
 	
 	List<QuestionVO> parentNumber(@Param("surveyId") int surveyId);
+	
+	public int insAnswer(AnswerVO answerVO);
+	public int delAnswer(AnswerVO answerVO);
+	public int clearSelections(AnswerVO answerVO);
+	
+	public Integer getAnswerId(AnswerVO answerVO);
 }

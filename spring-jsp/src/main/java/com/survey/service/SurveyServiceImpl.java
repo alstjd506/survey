@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.survey.mapper.SurveyMapper;
 import com.survey.vo.AnswerVO;
@@ -71,5 +72,37 @@ public class SurveyServiceImpl implements SurveyService {
 		// TODO Auto-generated method stub
 		return mapper.parentNumber(surveyId);
 	}
+
+	@Override
+	public void insAnswer(AnswerVO answerVO) {
+		// TODO Auto-generated method stub
+		mapper.insAnswer(answerVO);
+	}
+
+	@Override
+	public void delAnswer(AnswerVO answerVO) {
+		// TODO Auto-generated method stub
+		int answerId = mapper.getAnswerId(answerVO);
+		System.out.println(">>>>>>>>>>>>answerId"+ answerId);
+		answerVO.setAnswerId(answerId);
+		mapper.delAnswer(answerVO);
+	}
+
+	@Override
+	public void clearSelections(AnswerVO answerVO) {
+		// TODO Auto-generated method stub
+		mapper.clearSelections(answerVO);
+	}
+	
+	@Transactional
+	@Override
+	public void processAnswer(AnswerVO answerVO) {
+		
+		mapper.clearSelections(answerVO);
+		mapper.insAnswer(answerVO);
+		
+	}
+
+	
 
 }

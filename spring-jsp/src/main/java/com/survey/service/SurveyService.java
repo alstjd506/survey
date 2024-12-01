@@ -22,4 +22,12 @@ public interface SurveyService {
 	public int totalParentCount(Criteria criteria);
 	
 	List<QuestionVO> parentNumber(@Param("surveyId") int surveyId);
+	
+	public void insAnswer(AnswerVO answerVO);
+	public void delAnswer(AnswerVO answerVO);
+	public void clearSelections(AnswerVO answerVO);
+	
+	public void processAnswer(AnswerVO answerVO);
+	
+
 }

@@ -62,10 +62,10 @@ WHERE survey_num > (#{pageNum} - 1) * #{amount}
         O.OPTION_TEXT,
         O.TURN AS OPTION_TURN,
         O.QUESTION_ID,
-        CASE 
+        MAX(CASE 
             WHEN A.OPTION_ID = O.OPTION_ID THEN 1
             ELSE 0 
-        END AS is_selected
+        END) AS is_selected
     FROM 
         SV_OPTION O
     LEFT JOIN 
@@ -79,6 +79,8 @@ WHERE survey_num > (#{pageNum} - 1) * #{amount}
             FROM SV_QUESTION 
             WHERE SURVEY_ID = #{surveyId}
         )
+    GROUP BY 
+    	O.OPTION_ID, O.OPTION_TEXT, O.TURN, O.QUESTION_ID
     ORDER BY 
         O.QUESTION_ID, O.TURN ASC
 </select>
@@ -238,5 +240,56 @@ FROM (
 )
 WHERE PARENT_QUESTION_ID IS NULL
 </select>
+
+
+<insert id="insAnswer" parameterType="answerVO">
+    INSERT INTO SV_ANSWER( 
+        ANSWER_ID,
+        ANSWER_TEXT,
+        QUESTION_ID,
+        USER_ID,
+        OPTION_ID
+    ) VALUES (
+        SEQ_SV_ANSWER.NEXTVAL,
+        <choose>
+            <when test="answerText != null">
+                #{answerText}
+            </when>
+            <otherwise>
+                NULL
+            </otherwise>
+        </choose>,
+        #{questionId},
+        #{userId},
+        <choose>
+            <when test="optionId != null">
+                #{optionId}
+            </when>
+            <otherwise>
+                NULL
+            </otherwise>
+        </choose>
+    )
+</insert>
+
+<delete id="delAnswer" parameterType="answerVO">
+		DELETE SV_ANSWER
+		WHERE ANSWER_ID = #{answerId}
+		  AND USER_ID = #{userId}
+</delete>
+	
+	<delete id="clearSelections">
+    DELETE FROM SV_ANSWER
+    WHERE QUESTION_ID = #{questionId}
+      AND USER_ID = #{userId}
+</delete>
+
+<select id="getAnswerId" parameterType="answerVO" resultType="int">
+		 SELECT ANSWER_ID
+      FROM SV_ANSWER
+     WHERE USER_ID = #{userId}
+       AND QUESTION_ID = #{questionId}
+       AND OPTION_ID = #{optionId}
+	</select>
 
 </mapper>
